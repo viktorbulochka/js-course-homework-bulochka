@@ -1,7 +1,7 @@
 var taskCompleted = {
     'Anna':29,
     'Serg':35,
-    'Elena':10,
+    'Elena':100,
     'Anton':99
 };
 
