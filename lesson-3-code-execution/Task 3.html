@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+    function calculator() {
+        var calculatorArray = [];
+        var boolean = true;
+        var sum = 0;
+
+        while (boolean) {
+            var typedNum = prompt('Введите ваше число');
+            if (typedNum === '' || typedNum === null || isNaN(typedNum)) {
+                boolean = false;
+            } else {
+                calculatorArray.push(Number(typedNum));
+            }
+        }
+
+        for (var i = 0; i < calculatorArray.length; i++) {
+            sum += calculatorArray[i];
+        }
+
+        alert(sum);
+    }
+
+    calculator()
+    
+</script>
+</body>
+</html>
