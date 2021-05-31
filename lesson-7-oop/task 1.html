@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+    (function() {
+        function Question(questions, answers, correct) {
+            this.questions = questions;
+            this.answers = answers;
+            this.correct = correct;
+        }
+
+        var firstQuestion = new Question('Что такое Stackoverflow?',
+            ['Какой-то программисткий термин?', 'Название библиотеки js','Ответы Mail.ru, только для IT'],
+            2);
+
+        var secondQuestion = new Question('Сколько представляет собой оценка задачи "Вроде изян" в часах?',
+            ['6', '100', '80'],
+            1);
+        var thirdQuestion = new Question('Что такое Python?',
+            ['Питон с английского', 'Еще одна библиотека?', 'Язык программирования'],
+            2);
+
+        var questions = [firstQuestion, secondQuestion, thirdQuestion];
+        var random = Math.floor(Math.random() * questions.length);
+
+        Question.prototype.showQuestion = function() {
+            console.log(this.questions);
+
+            for (var i = 0; i < this.answers.length; i++) {
+                console.log(i + ': ' + this.answers[i]);
+            }
+        };
+        questions[random].showQuestion();
+
+        var answer = parseInt(prompt('Назовите правильный ответ'));
+
+        Question.prototype.answerValidator = function(valid) {
+            if (valid === this.correct) {
+                console.log('Правильно!');
+            } else {
+                console.log('Не-а, неправильно!');
+            }
+        };
+        questions[random].answerValidator(answer);
+
+    })();
+</script>
+</body>
+</html>
