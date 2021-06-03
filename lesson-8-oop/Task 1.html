@@ -5,6 +5,82 @@
     <title>Title</title>
 </head>
 <body>
+<script>
+    (function () {
+        function Question(questions, answers, correct) {
+            this.questions = questions;
+            this.answers = answers;
+            this.correct = correct;
+        }
 
+        var firstQuestion = new Question('Что такое Stackoverflow?',
+            ['Какой-то программисткий термин?', 'Название библиотеки js', 'Ответы Mail.ru, только для IT'],
+            2);
+
+        var secondQuestion = new Question('Сколько представляет собой оценка задачи "Вроде изян" в часах?',
+            ['6', '100', '80'],
+            1);
+        var thirdQuestion = new Question('Что такое Python?',
+            ['Питон с английского', 'Еще одна библиотека?', 'Язык программирования'],
+            2);
+
+        var questions = [firstQuestion, secondQuestion, thirdQuestion];
+        var random = Math.floor(Math.random() * questions.length);
+
+        Question.prototype.showQuestion = function () {
+            console.log(this.questions);
+
+            for (var i = 0; i < this.answers.length; i++) {
+                console.log(i + ': ' + this.answers[i]);
+            }
+        };
+        questions[random].showQuestion();
+
+        Question.prototype.answerValidator = function (valid, point) {
+            var score;
+            if (valid === this.correct) {
+                console.log('Правильно!');
+                score = point(true)
+
+            } else {
+                console.log('Не-а, неправильно!');
+                score = point(false)
+
+            }
+            this.scoreTable(score)
+        };
+
+        Question.prototype.scoreTable = function (score) {
+            console.log('\n')
+            console.log('Ваши очки: ' + score);
+            console.log('\n')
+        };
+
+        function score() {
+            var score = 0;
+            return function (correct) {
+                if (correct) {
+                    score++;
+                }
+                return score;
+            }
+        }
+        var scoreUnit = score();
+
+        function nextQuestion() {
+            var n = Math.floor(Math.random() * questions.length);
+
+            questions[n].showQuestion();
+
+            var answer = prompt('Выберите правильный вариант');
+
+            if (answer !== 'exit') {
+                questions[n].answerValidator(parseInt(answer), scoreUnit);
+                nextQuestion();
+            }
+        }
+        nextQuestion();
+    })();
+</script>
 </body>
 </html>
