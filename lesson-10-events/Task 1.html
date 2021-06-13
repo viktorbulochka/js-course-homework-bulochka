@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<form id='card'></form>
+<script>
+    var formArray =
+        [
+            {input: 'Разработчики: ', type: 'text'},
+            {input: 'Название сайта:', type: 'text'},
+            {input: 'URL сайта:', type: 'url'},
+            {input: 'Дата запуска сайта: ', type: 'date'},
+            {input: 'Посетителей в сутки:', type: 'number'},
+            {input: 'E-mail для связи:', type: 'email'},
+            {
+                input: 'Рубрика каталога:', type: 'select',
+                variants: [
+                    {text: 'здоровье', value: 1},
+                    {text: 'домашний уют', value: 2},
+                    {text: 'бытовая техника', value: 3}
+                ]
+            },
+            {
+                input: 'Размещение:', type: 'radio',
+                variants:
+                    [{
+                        text: 'бесплатное', value: 1
+                    },
+                        {text: 'платное', value: 2},
+                        {text: 'VIP', value: 3}
+                    ]
+            },
+            {input: 'Разрешить отзывы:', type: 'check'},
+            {input: 'Описание сайта:', type: 'textarea'},
+            {input: 'Опубликовать', type: 'submit'},
+        ];
+
+    function formConstructor(formExample, htmlDoc) {
+        formExample.forEach(element => {
+            var label = document.createElement('label');
+            label.innerHTML = element.input;
+            htmlDoc.appendChild(label);
+            if (element.type === 'text') {
+                var newTag = document.createElement('input');
+                newTag.type = 'text';
+                newTag.style.cssText = 'width:300px';
+                htmlDoc.appendChild(newTag);
+                var spaceBetween = document.createElement('br');
+                htmlDoc.appendChild(spaceBetween);
+            }
+
+            if (element.type === 'url') {
+                newTag = document.createElement('input');
+                newTag.type = 'url';
+                htmlDoc.appendChild(newTag);
+                spaceBetween = document.createElement('br');
+                htmlDoc.appendChild(spaceBetween);
+            }
+
+            if (element.type === 'date') {
+                newTag = document.createElement('input');
+                newTag.type = 'date';
+                htmlDoc.appendChild(newTag);
+                spaceBetween = document.createElement('br');
+                htmlDoc.appendChild(spaceBetween);
+            }
+
+            if (element.type === 'number') {
+                newTag = document.createElement('input');
+                newTag.type = 'number';
+                htmlDoc.appendChild(newTag);
+                spaceBetween = document.createElement('br');
+                htmlDoc.appendChild(spaceBetween);
+            }
+
+            if (element.type === 'email') {
+                newTag = document.createElement('input');
+                newTag.type = 'email';
+                htmlDoc.appendChild(newTag);
+                spaceBetween = document.createElement('br');
+                htmlDoc.appendChild(spaceBetween);
+            }
+
+            if (element.type === 'select') {
+                newTag = document.createElement('select');
+                htmlDoc.appendChild(newTag);
+                spaceBetween = document.createElement('br');
+                htmlDoc.appendChild(spaceBetween);
+                element.variants.forEach(subElement => {
+                    var option = document.createElement('option');
+                    option.setAttribute('value', subElement.value);
+                    option.textContent = subElement.text;
+                    newTag.appendChild(option);
+                });
+            }
+
+            if (element.type === 'radio') {
+                element.variants.forEach(subElement => {
+                    newTag = document.createElement('input');
+                    newTag.type = 'radio';
+                    newTag.setAttribute('value', subElement.value);
+                    var newRadio = document.createElement('span');
+                    newRadio.textContent = subElement.text;
+                    htmlDoc.appendChild(newTag);
+                    htmlDoc.appendChild(newRadio);
+                });
+                spaceBetween = document.createElement('br');
+                htmlDoc.appendChild(spaceBetween)
+            }
+
+            if (element.type === 'check') {
+                newTag = document.createElement('input');
+                newTag.type = 'checkbox';
+                htmlDoc.appendChild(newTag);
+                spaceBetween = document.createElement('br');
+                htmlDoc.appendChild(spaceBetween);
+            }
+
+            if (element.type === 'textarea') {
+                newTag = document.createElement('textarea');
+                spaceBetween = document.createElement('br');
+                htmlDoc.appendChild(spaceBetween);
+                newTag.style.cssText = 'width: 500px; height: 100px';
+                htmlDoc.appendChild(newTag);
+
+            }
+
+            if (element.type === 'submit') {
+                spaceBetween = document.createElement('br');
+                htmlDoc.appendChild(spaceBetween);
+                newTag = document.createElement('input');
+                newTag.type = 'submit';
+                newTag.value = element.input;
+                htmlDoc.appendChild(newTag);
+                htmlDoc.removeChild(label);
+            }
+        });
+    }
+
+    formConstructor(formArray, document.getElementById('card'));
+</script>
+</body>
+</html>
