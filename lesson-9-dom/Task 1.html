@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div>
+    <form>
+        <input type="button" value="ввод информации о напитке" id="btn1">
+        <input type="button" value="получение информации о напитке" id="btn2">
+        <input type="button" value="удаление информации о напитке" id="btn3">
+        <input type="button" value="перечень всех напитков" id="btn4">
+    </form>
+</div>
+<script src="HashStorage.js"></script>
+<script>
+    var drinkStorage = new THashStorage();
+
+    var addDrink = document.getElementById("btn1");
+    addDrink.onclick = function () {
+        var drinks = {};
+        var name = prompt("Введите название напитка:");
+        drinks.alcohol = confirm("Напиток содержит алкоголь?");
+        drinks.recipe = prompt("Введите рецепт напитка:");
+        drinkStorage.addValue(name, drinks);
+    };
+
+    var getDrink = document.getElementById("btn2");
+    getDrink.onclick = function () {
+        var name = prompt("Напишите название напитка");
+
+        var answer = drinkStorage.getValue(name);
+
+        if (drinkStorage.getValue(name) !== undefined) {
+            alert("Напиток: " + name + "\n"
+                + "Содержит алкоголь: " + (answer.alcohol === true ? "да" : "нет") +
+                "\n" + "Рецепт: " + (answer.recipe ? answer.recipe : "Без рецепта"));
+        } else {
+            alert("Такого напитка нет");
+        }
+    };
+
+    var deleteDrink = document.getElementById("btn3");
+    deleteDrink.onclick = function () {
+        var name = prompt("Напишите название напитка");
+
+        if (drinkStorage.deleteValue(name) === true) {
+            alert("напиток " + name + " удален")
+        } else {
+            alert("Такого напитка нет");
+        }
+    };
+
+    var getDrinks = document.getElementById("btn4");
+    getDrinks.onclick = function () {
+        alert(drinkStorage.getKeys());
+    };
+</script>
+</body>
+</html>
