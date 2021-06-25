@@ -5,6 +5,228 @@
     <title>Title</title>
 </head>
 <body>
+<div id="tennisField"></div>
+<script>
+    "use strict";
 
+    var TField = document.getElementById('tennisField');
+    TField.style.width = 700 + "px";
+    TField.style.height = 400 + "px";
+    TField.style.background = "rgba(214,229,69,0.89)";
+    TField.style.border = '2px black solid';
+
+    var startBtn = document.createElement("input");
+    document.body.insertBefore(startBtn, document.body.children[0]);
+    startBtn.type = "button";
+    startBtn.value = "Пуск!";
+    startBtn.onclick = Start;
+    startBtn.style.width = 50 + "px"
+
+    var score = document.createElement("div");
+    document.body.insertBefore(score, document.body.children[1]);
+    score.style.marginLeft = 325 + "px";
+    score.style.fontSize = 2 + "rem";
+    var sc1 = 0;
+    var sc2 = 0;
+
+    var leftPaddle = document.createElement("div");
+    TField.appendChild(leftPaddle);
+    leftPaddle.style.width = 10 + "px";
+    leftPaddle.style.height = 150 + "px";
+    leftPaddle.style.background = "darkred";
+    leftPaddle.style.position = "absolute";
+
+    var rightPaddle = document.createElement("div");
+    TField.appendChild(rightPaddle);
+    rightPaddle.style.width = 10 + "px";
+    rightPaddle.style.height = 150 + "px";
+    rightPaddle.style.background = "darkblue";
+    rightPaddle.style.position = "absolute";
+
+    var paddleH = {
+        width: 10,
+        height: 150,
+        leftPaddleX: TField.getBoundingClientRect().left,
+        leftPaddleY: TField.getBoundingClientRect().top + TField.getBoundingClientRect().height / 2 - leftPaddle.getBoundingClientRect().height / 2,
+        leftPaddleSpeed: 0,
+        rightPaddleX: TField.getBoundingClientRect().left + TField.getBoundingClientRect().width - rightPaddle.getBoundingClientRect().width,
+        rightPaddleY: TField.getBoundingClientRect().top + TField.getBoundingClientRect().height / 2 - leftPaddle.getBoundingClientRect().height / 2,
+        rightPaddleSpeed: 0,
+
+        Update: function () {
+            var Lpaddle = leftPaddle;
+            Lpaddle.style.left = this.leftPaddleX + "px";
+            Lpaddle.style.top = this.leftPaddleY + "px";
+            var Rpaddle = rightPaddle;
+            Rpaddle.style.left = this.rightPaddleX + "px";
+            Rpaddle.style.top = this.rightPaddleY + "px";
+        }
+    };
+    var paddleAreaH = {
+        width: 10,
+        height: TField.getBoundingClientRect().height
+    };
+    paddleH.Update();
+
+    var ball = document.createElement("div");
+    TField.appendChild(ball);
+    ball.style.background = "darkgreen"
+    ball.style.borderRadius = "50%";
+    ball.style.width = 30 + "px";
+    ball.style.height = 30 + "px";
+    ball.style.position = "absolute";
+
+    var ballH = {
+        ballX: TField.getBoundingClientRect().left + TField.getBoundingClientRect().width / 2 - ball.getBoundingClientRect().width / 2,
+        ballY: TField.getBoundingClientRect().top + TField.getBoundingClientRect().height / 2 - ball.getBoundingClientRect().height / 2,
+        speedX: 0,
+        speedY: 0,
+        width: 30,
+        height: 30,
+
+        Update: function () {
+            var updBall = ball;
+            updBall.style.left = this.ballX + "px";
+            updBall.style.top = this.ballY + "px";
+        }
+    };
+
+    var ballAreaH = {
+        width: TField.getBoundingClientRect().width,
+        height: TField.getBoundingClientRect().height
+    };
+    ballH.Update();
+
+    requestAnimationFrame(Tick);
+
+    function Keyboard () {
+        window.addEventListener("keydown", function (EO) {
+            EO = EO || window.event;
+            EO.preventDefault();
+
+            if (EO.keyCode === 17) {
+                paddleH.leftPaddleSpeed = 5;
+            }
+
+            if (EO.keyCode === 16) {
+                paddleH.leftPaddleSpeed = -5;
+            }
+
+            if (EO.keyCode === 40) {
+                paddleH.rightPaddleSpeed = 5;
+            }
+
+            if (EO.keyCode === 38) {
+                paddleH.rightPaddleSpeed = -5;
+            }
+        });
+
+        window.addEventListener("keyup", function (EO) {
+            EO = EO || window.event;
+            EO.preventDefault();
+
+            if (EO.keyCode === 17) {
+                paddleH.leftPaddleSpeed = 0;
+            }
+
+            if (EO.keyCode === 16) {
+                paddleH.leftPaddleSpeed = 0;
+            }
+
+            if (EO.keyCode === 40) {
+                paddleH.rightPaddleSpeed = 0;
+            }
+
+            if (EO.keyCode === 38) {
+                paddleH.rightPaddleSpeed = 0;
+            }
+        });
+    }
+
+    Keyboard();
+
+    function scChange() {
+        score.innerHTML = sc1 + ":" + sc2;
+    }
+    scChange();
+
+    function Start() {
+        ballH.speedX = 5;
+        ballH.speedY = 2.5;
+    }
+
+    function Tick() {
+        paddleH.leftPaddleY += paddleH.leftPaddleSpeed;
+        paddleH.rightPaddleY += paddleH.rightPaddleSpeed;
+
+        if (paddleH.leftPaddleY + paddleH.height > (TField.getBoundingClientRect().top + paddleAreaH.height)) {
+            paddleH.leftPaddleY = TField.getBoundingClientRect().top + paddleAreaH.height - paddleH.height;
+        }
+        if (paddleH.leftPaddleY < TField.getBoundingClientRect().top) {
+            paddleH.leftPaddleY = TField.getBoundingClientRect().top;
+        }
+        if (paddleH.rightPaddleY + paddleH.height > (TField.getBoundingClientRect().top + paddleAreaH.height)) {
+            paddleH.rightPaddleY = TField.getBoundingClientRect().top + paddleAreaH.height - paddleH.height;
+        }
+        if (paddleH.rightPaddleY < TField.getBoundingClientRect().top) {
+            paddleH.rightPaddleY = TField.getBoundingClientRect().top;
+        }
+
+        ballH.ballX -= ballH.speedX;
+        ballH.ballY -= ballH.speedY;
+
+        if (ballH.ballY + ballH.height > (TField.getBoundingClientRect().top + ballAreaH.height)) {
+            ballH.speedY = -ballH.speedY;
+            ballH.ballY = TField.getBoundingClientRect().top + ballAreaH.height - ballH.height;
+        }
+        if (ballH.ballY < TField.getBoundingClientRect().top) {
+            ballH.speedY = -ballH.speedY;
+            ballH.ballY = TField.getBoundingClientRect().top;
+        }
+
+        if ((ballH.ballY + ballH.height < paddleH.rightPaddleY || ballH.ballY > (paddleH.rightPaddleY + paddleH.height)) && ballH.ballX + ballH.width >= (TField.getBoundingClientRect().left + TField.getBoundingClientRect().width)) {
+            sc1 += 1;
+            scChange();
+
+            ballH.speedX = 0;
+            ballH.speedY = 0;
+
+            ballH.ballX = TField.getBoundingClientRect().left + TField.getBoundingClientRect().width - ballH.width - 1;
+
+            window.setTimeout(function () {
+                ballH.ballX = TField.getBoundingClientRect().left + paddleH.width;
+                ballH.ballY = paddleH.leftPaddleY + paddleH.height / 2;
+                Start();
+            }, 1000);
+        } else if (!(ballH.ballY + ballH.height < paddleH.rightPaddleY || ballH.ballY > (paddleH.rightPaddleY + paddleH.height)) && ballH.ballX + ballH.width > (paddleH.rightPaddleX)) {
+            ballH.speedX = -ballH.speedX;
+            ballH.ballX = TField.getBoundingClientRect().left + TField.getBoundingClientRect().width - paddleH.width - ballH.width;
+        }
+
+        if ((ballH.ballY + ballH.height < paddleH.leftPaddleY || ballH.ballY > (paddleH.leftPaddleY + paddleH.height)) && ballH.ballX <= (TField.getBoundingClientRect().left)) {
+            sc2 += 1;
+            scChange();
+
+            ballH.speedX = 0;
+            ballH.speedY = 0;
+
+            ballH.ballX = TField.getBoundingClientRect().left + 1;
+
+            window.setTimeout(function () {
+                ballH.ballX = TField.getBoundingClientRect().left + TField.getBoundingClientRect().width - paddleH.width;
+                ballH.ballY = paddleH.rightPaddleY + paddleH.height / 2;
+                Start();
+            }, 1000);
+        } else if (!(ballH.ballY + ballH.height < paddleH.leftPaddleY || ballH.ballY > (paddleH.leftPaddleY + paddleH.height)) && ballH.ballX < (paddleH.width + paddleH.leftPaddleX)) {
+            ballH.speedX = -ballH.speedX;
+            ballH.ballX = TField.getBoundingClientRect().left + paddleH.width;
+        }
+
+        paddleH.Update();
+        ballH.Update();
+
+        requestAnimationFrame(Tick);
+    }
+    </script>
 </body>
 </html>
