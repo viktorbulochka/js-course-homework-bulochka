@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div id="wrapper">
+    <img src="https://09.img.avito.st/208x156/10356530909.jpg" alt="">
+    <img src="https://09.img.avito.st/208x156/10356530909.jpg" alt="">
+    <img src="https://09.img.avito.st/208x156/10356530909.jpg" alt="">
+</div>
+<script>
+    window.addEventListener('load', ClickedHandler, false);
+
+    function ClickedHandler(EO) {
+        EO = EO || window.event;
+        var images = document.getElementsByTagName('img');
+        var DragShiftX;
+        var DragShiftY;
+        var Drag_Image;
+
+        for (let i = images.length - 1; i >= 0; i--) {
+            Drag_Image = images[i];
+
+            Drag_Image.style.top = Drag_Image.offsetTop + 'px';
+            Drag_Image.style.left = Drag_Image.offsetLeft + 'px';
+            Drag_Image.style.position = "absolute";
+
+            Drag_Image.onmousedown = Drag_Start;
+            Drag_Image.onmouseup = Drag_Stop;
+        }
+
+        function Drag_Start(EO) {
+            EO = EO || window.event;
+            EO.preventDefault();
+
+            DragShiftX = EO.pageX - EO.target.offsetLeft;
+            DragShiftY = EO.pageY - EO.target.offsetTop;
+
+            var container = document.getElementById('wrapper');
+            var currentElem = EO.target;
+            container.appendChild(currentElem);
+
+            window.onmousemove = Drag_Move;
+            function Drag_Move(EO) {
+                EO = EO || window.event;
+                EO.preventDefault();
+
+                currentElem.style.top = (EO.pageY - DragShiftY) + 'px';
+                currentElem.style.left = (EO.pageX - DragShiftX) + 'px';
+            }
+        }
+
+        function Drag_Stop(EO) {
+            EO.preventDefault();
+            window.onmousemove = null;
+        }
+    }
+</script>
+</body>
+</html>
