@@ -5,6 +5,161 @@
     <title>Title</title>
 </head>
 <body>
+<div id="wrapper"></div>
+<script>
+    'use strict';
+    document.body.style.margin = "0";
+    document.body.style.padding = "0";
 
+    const wrapper = document.getElementById('wrapper');
+    wrapper.style.height = 100 + "vh"
+    wrapper.style.background = "#4b6cb7";
+    wrapper.style.background = "-webkit-linear-gradient(to bottom, #182848, #4b6cb7)";
+    wrapper.style.background = "linear-gradient(to bottom, #182848, #4b6cb7)"
+    wrapper.style.textAlign = "center"
+    wrapper.style.padding = 10 + "rem"
+
+    const baseRadius = 300;
+    const numbersBaseRadius = baseRadius / 2.5;
+    const circleRadius = baseRadius / 20;
+    const dotSize = 15;
+    const digWidth = baseRadius / 4; //
+    const digHeight = baseRadius / 10.5;
+
+    wrapper.appendChild(createWatch());
+    setInterval(tickTimer, 0);
+
+    function createWatch() {
+        let base = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        base.id = 'base';
+        base.style.width = baseRadius;
+        base.style.height = baseRadius;
+        base.style.background = 'ghostwhite';
+        base.style.borderRadius = 50 + "%"
+        base.style.border = "5px solid grey"
+
+        base.appendChild(createClockFace());
+        base.appendChild(createArrow('hours', 75, 7, 'black'));
+        base.appendChild(createArrow('minutes', 90, 5, 'black'));
+        base.appendChild(createArrow('seconds', 120, 3, 'red'));
+        base.appendChild(createDecorativeDot(dotSize))
+        base.appendChild(createDigitalWatch());
+        base.appendChild(createDigits());
+        return base;
+    }
+
+    function createClockFace() {
+        let clock = document.createDocumentFragment();
+        for (let number = 1; number <= 12; number++) {
+            let angle = number / 12 * Math.PI * 2;
+            let x = ((baseRadius - circleRadius) / 2.10 + dotSize) + Math.round(Math.sin(angle) * numbersBaseRadius);
+            let y = ((baseRadius - circleRadius) / 2.10 + dotSize) - Math.round(Math.cos(angle) * numbersBaseRadius);
+
+            clock.appendChild(createHourCircle(x, y));
+            clock.appendChild(createNumbers(x, y, number));
+        }
+        return clock;
+    }
+
+    function createHourCircle(circleX, circleY) {
+        let circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.style.fill = "darkgray"
+        circle.setAttribute('cx', circleX);
+        circle.setAttribute('cy', circleY);
+        circle.setAttribute('r', circleRadius);
+        return circle;
+    }
+
+    function createNumbers(circleX, circleY, number) {
+        let num = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        num.textContent = number;
+        num.setAttribute('y', circleY);
+        num.setAttribute('x', circleX);
+        num.style.textAnchor = "middle"
+        num.style.fontSize = "15"
+        num.style.alignmentBaseline = "middle"
+        num.style.fontWeight = 'bold'
+        return num;
+    }
+
+    function createDecorativeDot(size) {
+        let dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        dot.setAttribute('cy', baseRadius / 2);
+        dot.setAttribute('cx', baseRadius / 2);
+        dot.setAttribute('r', size / 2);
+        dot.setAttribute('fill', 'green');
+        return dot;
+    }
+
+    function createArrow(arrowType, arrowWidth, arrowHeight, arrowColor) {
+        let arrow = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        arrow.id = arrowType;
+        arrow.setAttribute('x1', baseRadius / 2);
+        arrow.setAttribute('y1', baseRadius / 2);
+        arrow.setAttribute('x2', baseRadius / 2 + arrowWidth);
+        arrow.setAttribute('y2', baseRadius / 2);
+        arrow.setAttribute('stroke-linecap', 'round');
+        arrow.setAttribute('stroke', arrowColor);
+        arrow.setAttribute('stroke-width', arrowHeight);
+        arrow.setAttribute('transform', `translate(${baseRadius, baseRadius})`);
+        arrow.style.transformOrigin = 'center';
+        return arrow;
+    }
+
+    function rotator(handle, degree) {
+        let arrow = document.getElementById(`${handle}`);
+        arrow.style.transform = `rotate(${degree}deg)`;
+    }
+
+    function updateWatch(hour, minute, second) {
+        let thisSecondRotate = (second / 60) * 360 - 90;
+        let thisMinuteRotate = (minute) / 60 * 360 - 90;
+        let thisHourRotate = (hour + minute / 60) / 12 * 360 - 90;
+        rotator('seconds', thisSecondRotate);
+        rotator('minutes', thisMinuteRotate);
+        rotator('hours', thisHourRotate);
+    }
+
+    function createDigitalWatch() {
+        let textClock = document.createElementNS("http://www.w3.org/2000/svg", 'rect');
+        textClock.setAttribute('x', baseRadius / 2 - digWidth / 2);
+        textClock.setAttribute('y',  baseRadius / 2 + digHeight);
+        textClock.setAttribute('rx', '5');
+        textClock.setAttribute('ry', '5');
+        textClock.setAttribute('width',  digWidth);
+        textClock.setAttribute('height',  digHeight);
+        textClock.setAttribute('fill',  'grey');
+        return textClock;
+    }
+
+    function createDigits() {
+        let digits = document.createElementNS("http://www.w3.org/2000/svg", 'text');
+        digits.id = 'digitWatch';
+        digits.setAttribute('x', baseRadius / 2);
+        digits.setAttribute('y', baseRadius / 2 + digHeight * 1.5);
+        digits.style.textAnchor = 'middle'
+        digits.setAttribute('stroke', 'black');
+        digits.setAttribute('opacity', '0.6');
+        digits.setAttribute('stroke-width', '1');
+        digits.setAttribute('alignment-baseline', 'middle');
+        digits.setAttribute('font-size', '14');
+        digits.setAttribute('textLength', '65');
+        return digits;
+    }
+
+    function updateDigitalWatch(day) {
+        let time = document.getElementById('digitWatch');
+        time.textContent = day.toLocaleTimeString();
+    }
+
+    function tickTimer() {
+        let now = new Date();
+        let thisSecond = now.getSeconds();
+        let thisMinute = now.getMinutes();
+        let thisHour = now.getHours();
+        updateWatch(thisHour, thisMinute, thisSecond);
+        updateDigitalWatch(now);
+    }
+</script>
 </body>
 </html>
