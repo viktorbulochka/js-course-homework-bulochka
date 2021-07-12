@@ -13,15 +13,35 @@
             font-family: "Open Sans", serif;
             font-size: 0.8em;
         }
+
+        h2 {
+            text-align: center;
+        }
+
         .manage-drinks > * {
             display: block;
         }
+
+        .manage-dish > * {
+            display: block;
+            position: relative;
+            top: 5vh
+        }
+
         .manage-drinks .drink-info {
             margin: 0.5em auto;
             width: 95%;
             max-width: 320px;
             color: black;
         }
+
+        .manage-dish .dish-info {
+            margin: 0.5em auto;
+            width: 95%;
+            max-width: 320px;
+            color: black;
+        }
+
         input {
             margin: 0.5em auto;
             padding: 0.5em 1em;
@@ -32,6 +52,7 @@
             background: darkslategray;
             cursor: pointer;
         }
+
         input:hover {
             color: #eee;
         }
@@ -39,17 +60,32 @@
 </head>
 <body>
 <div class="manage-drinks">
+    <h2>Напитки</h2>
     <input type='button' value='Добавить напиток' onclick='addDrink()'>
     <input type='button' value='Показать информацию о напитке' onclick='showDrinkInfo()'>
     <input type='button' value='Удалить напиток' onclick='removeDrink()'>
     <input type='button' value='Показать меню напитков' onclick='showDrinksMenu()'>
     <div id="message" class="drink-info"></div>
 </div>
+<div class="manage-dish">
+    <h2>Блюда</h2>
+    <input type='button' value='Добавить блюдо' onclick='addDishes()'>
+    <input type='button' value='Показать информацию о блюде' onclick='showDishInfo()'>
+    <input type='button' value='Удалить блюдо' onclick='removeDish()'>
+    <input type='button' value='Показать меню блюд' onclick='showDishMenu()'>
+    <div id="message1" class="dish-info"></div>
+</div>
 <script src="hash.js"></script>
 <script>
     'use strict';
 
-    var drinkStorage = new THashStorage();
+    var drinkStorage = new TLocalStorage("Drinks");
+    var dishesStorage = new TLocalStorage("Dishes")
+
+    window.onload = function () {
+        drinkStorage.reset();
+        dishesStorage.reset();
+    }
 
     function addDrink() {
         var drinkName = prompt('Введите название напитка', 'Test Drink').toLowerCase().trim();
@@ -64,8 +100,21 @@
         }
     }
 
+    function addDishes() {
+        var dishName = prompt('Введите название напитка', 'Test Dish').toLowerCase().trim();
+        var dHash = {};
+
+        if (dishName) {
+            dHash.recipe = prompt('Введите рецепт приготовления блюда', 'Test Recipe');
+            dHash.isSpicy = confirm('Ваше блюдо острое?') ? 'да' : 'нет';
+            return dishesStorage.addValue(dishName, dHash);
+        } else {
+            alert('Ввод отменен!')
+        }
+    }
+
     function showDrinkInfo() {
-        var drinkName = prompt('Введите название напитка: ','').toLowerCase().trim();
+        var drinkName = prompt('Введите название напитка: ', '').toLowerCase().trim();
         var getDrinkInfo = (drinkName) ? drinkStorage.getValue(drinkName) : 0;
         var resultHTML = '';
 
@@ -81,6 +130,23 @@
         document.getElementById('message').innerHTML = resultHTML;
     }
 
+    function showDishInfo() {
+        var dishName = prompt('Введите название блюда: ', '').toLowerCase().trim();
+        var getDishInfo = (dishName) ? dishesStorage.getValue(dishName) : 0;
+        var resultHTML = '';
+
+        if (getDishInfo) {
+            var print1 = 'Блюдо: ' + dishName + '<br>';
+            var print2 = 'Острый: ' + getDishInfo.isSpicy + '<br>';
+            var print3 = 'Рецепт приготовления: ' + getDishInfo.recipe + '<br>';
+
+            resultHTML = print1 + print2 + print3;
+        } else {
+            resultHTML = 'Ошибка! Нет такого блюда';
+        }
+        document.getElementById('message1').innerHTML = resultHTML;
+    }
+
     function removeDrink() {
         var drinkName = prompt('Какой напиток удалить?').toLowerCase().trim();
         var delDrinkInfo = drinkStorage.deleteValue(drinkName);
@@ -92,6 +158,19 @@
             resultHTML = 'Ошибка! Нет такого напитка';
         }
         document.getElementById('message').innerHTML = resultHTML;
+    }
+
+    function removeDish() {
+        var dishName = prompt('Какое блюдо удалить?').toLowerCase().trim();
+        var delDishInfo = dishesStorage.deleteValue(dishName);
+        var resultHTML = '';
+
+        if (delDishInfo) {
+            resultHTML = 'Информация о блюде ' + dishName + ' удалена';
+        } else {
+            resultHTML = 'Ошибка! Нет такого блюда';
+        }
+        document.getElementById('message1').innerHTML = resultHTML;
     }
 
     function showDrinksMenu() {
@@ -106,6 +185,20 @@
             resultHTML = 'Меню пустое, добавьте напитки.';
         }
         document.getElementById('message').innerHTML = resultHTML;
+    }
+
+    function showDishMenu() {
+        var showMenuInfo = dishesStorage.getKeys();
+        var resultHTML = '';
+
+        if (showMenuInfo.length) {
+            for (var i = 0; i < showMenuInfo.length; i++) {
+                resultHTML += (i + 1) + '. ' + showMenuInfo[i] + '<br>';
+            }
+        } else {
+            resultHTML = 'Меню пустое, добавьте блюда.';
+        }
+        document.getElementById('message1').innerHTML = resultHTML;
     }
 </script>
 </body>
