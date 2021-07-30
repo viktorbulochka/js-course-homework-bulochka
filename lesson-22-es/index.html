@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src='http://code.jquery.com/jquery-latest.js'></script>
+</head>
+<body>
+<div id="wrap"></div>
+<script defer>
+    'use strict';
+
+    let articles = {
+        load(pathLoad) {
+            $.ajax(pathLoad, {
+                type: 'GET',
+                dataType: 'json',
+                async: false,
+                cache: false,
+                success: (data) => {
+                    this.list = data;
+                },
+                error: errorHandler,
+            });
+            this.sortList();
+        },
+        loadArticle(title) {
+            $.ajax(`articles/${this.list[title]}.html`, {
+                type: 'GET',
+                async: false,
+                dataType: 'html',
+                cache: false,
+                success: (data) => {
+                    this.articleTitle = title;
+                    this.articleHTML = data;
+                },
+                error: errorHandler,
+            });
+        },
+
+        sortList() {
+            this.sorted = Object.keys(this.list).sort();
+        },
+    };
+    articles.load( 'articles/list.json');
+
+    function renderNewState() {
+        let hash = window.location.hash;
+        let state = decodeURIComponent(hash.substr(1));
+        if (state === '') {
+            state = {pageName: 'mainPage'};
+        } else {
+            state = JSON.parse(state);
+        }
+        let articles_page = '';
+        switch (state.pageName) {
+            case 'mainPage':
+                articles_page += '<h2 class="title" id="title">Виды пельменей</h2>';
+                articles_page += '<div><p class="TOC" id="TOC" onclick="switchtoTOC(event)">Содержание пельменной энциклопедии</p></div>';
+                break;
+            case 'TOC':
+                if (articles.sorted) {
+                    articles.sortList();
+                }
+                let items = articles.sorted;
+                articles_page += '<h2 class="title" id="title">Содержание</h2>';
+
+                for (let i = 0; i < items.length; i++) {
+                    articles_page += `<ul>${items[i][0]}`;
+                    for (let j = i; j < items.length; j++) {
+                        if (items[i][0] === items[j][0]) {
+                            articles_page += `<li><p id="article" onclick="switchToArticle(event)">${items[j]}</p></li>`;
+                        } else {
+                            articles_page += "</ul>";
+                            break;
+                        }
+                    }
+                }
+                break;
+            case 'article':
+                if (articles.articleTitle == null) {
+                    articles.loadArticle(Object.keys(articles.list)[0]);
+                }
+                articles_page += "<ul class='menu'>";
+                articles.sorted.forEach((item) => {
+                    articles_page += `<li><p id="article"  onclick="switchToArticle(event)">${item}</p></li>`;
+                });
+                articles_page += '</ul>';
+                articles_page += `<h2 class="title" id="title">${articles.articleTitle}</h2>`;
+                articles_page += `${articles.articleHTML}`;
+                break;
+        }
+        document.getElementById('wrap').innerHTML = articles_page;
+    }
+    window.onhashchange = renderNewState
+    renderNewState();
+
+    function switchToState(pageName) {
+        location.hash = encodeURIComponent(JSON.stringify(pageName));
+    }
+    function switchtoTOC(event) {
+        event.preventDefault();
+
+        articles.sortList();
+        switchToState({pageName: 'TOC'});
+    }
+    function switchToArticle(event) {
+        event.preventDefault();
+
+        $.ajax(event.target.href, {
+            type: 'HEAD',
+            success: () => {
+                articles.loadArticle(event.target.textContent);
+                switchToState({pageName: 'article'});
+                renderNewState();
+            },
+            error: errorHandler,
+        });
+    }
+
+    function errorHandler(jqXHR, StatusStr, ErrorStr) {
+        alert(StatusStr + ' ' + ErrorStr);
+    }
+</script>
+</body>
+</html>
