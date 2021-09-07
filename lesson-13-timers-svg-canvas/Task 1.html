@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div id="wrapper"></div>
+<script>
+    'use strict';
+    document.body.style.margin = "0";
+    document.body.style.padding = "0";
+
+    let wrapper = document.getElementById('wrapper');
+    wrapper.style.height = 100 + "vh"
+    wrapper.style.background = "#4b6cb7";
+    wrapper.style.background = "-webkit-linear-gradient(to bottom, #182848, #4b6cb7)";
+    wrapper.style.background = "linear-gradient(to bottom, #182848, #4b6cb7)"
+
+    let canvas = document.createElement('canvas');
+    canvas.width = 800;
+    canvas.height = 800;
+    wrapper.appendChild(canvas);
+    let context = canvas.getContext('2d');
+    context.translate(400, 400);
+
+    const baseRadius = 290;
+    const numRadius = baseRadius * 0.825;
+    const circleRadius = baseRadius * 0.1;
+    const dotSize = baseRadius * 0.035;
+    const digWidth = baseRadius / 2.5;
+    const digHeight = baseRadius / 8;
+
+    setInterval(createWatch, 0);
+
+    function createWatch() {
+        createClockFace();
+        createDecorativeDot(dotSize)
+        createDigitalWatch();
+        updateWatch();
+    }
+
+    function createClockFace() {
+        context.save();
+        context.beginPath();
+        context.arc(0, 0, baseRadius, 0, 2 * Math.PI);
+        context.fillStyle = '#f3f2f2';
+        context.strokeStyle = '#8d8886';
+        context.lineWidth = 5;
+        context.fill();
+        context.stroke();
+
+        for (let number = 1; number <= 12; number++) {
+            let angle = number / 12 * Math.PI * 2;
+            let x = ((baseRadius - numRadius) / 2 - dotSize * 2.5) + Math.round(Math.sin(angle) * numRadius);
+            let y = ((baseRadius - numRadius) / 2 - dotSize * 2.5) - Math.round(Math.cos(angle) * numRadius);
+            drawHourCircle(x, y);
+            drawNumbers(number, x, y);
+        }
+        context.restore();
+    }
+
+    function drawHourCircle(x, y) {
+        context.save();
+        context.fillStyle = '#747272';
+        context.beginPath();
+        context.arc(x, y, circleRadius, 0, 2 * Math.PI);
+        context.fill();
+        context.restore();
+    }
+
+    function drawNumbers(number, x, y) {
+        context.save();
+        context.font = baseRadius * 0.075 + "px Verdana";
+        context.textBaseline = 'middle';
+        context.textAlign = 'center';
+        context.fillText(number, x, y);
+        context.restore();
+    }
+
+    function createArrow(angle, width, length) {
+        context.save();
+        context.beginPath();
+        context.lineWidth = width;
+        context.lineCap = 'round';
+        context.moveTo(0, 0);
+        context.rotate(angle);
+        context.lineTo(0, -length);
+        context.stroke();
+        context.rotate(-angle);
+        context.restore();
+    }
+
+    function createDecorativeDot(size) {
+        context.save();
+        context.beginPath();
+        context.arc(0, 0, size, 0, 2 * Math.PI);
+        context.fill();
+        context.restore();
+    }
+
+    function updateWatch() {
+        let now = new Date();
+
+        let second = now.getSeconds();
+        let secondMove = second * Math.PI / 30;
+        createArrow(secondMove, baseRadius * 0.01, baseRadius * 0.85);
+
+        let minute = now.getMinutes()
+        let minuteMove = (minute * Math.PI / 30);
+        createArrow(minuteMove, baseRadius * 0.02, baseRadius * 0.65);
+
+        let hour = now.getHours();
+        let hourMove = (hour * Math.PI / 6) + (minute * Math.PI / (6 * 60));
+        createArrow(hourMove, baseRadius * 0.035, baseRadius * 0.5);
+    }
+
+    function createDigitalWatch() {
+        context.save();
+        context.beginPath();
+        context.fillStyle = 'lightgrey';
+        context.rect(-digWidth / 2, digHeight, digWidth, digHeight);
+        context.fill();
+        context.restore();
+        createDigits();
+    }
+
+    function createDigits() {
+        context.save();
+        context.font = baseRadius * 0.075 + "px Verdana";
+        context.fillStyle = 'black';
+        context.textBaseline = 'middle';
+        context.textAlign = 'center';
+        context.fillText(updateDigitalWatch(), 0, digHeight * 1.5);
+        context.restore();
+    }
+
+    function updateDigitalWatch() {
+        let now = new Date();
+
+        let digTime = now.toLocaleTimeString();
+        return digTime;
+    }
+</script>
+</body>
+</html>
